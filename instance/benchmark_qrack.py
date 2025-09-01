@@ -22,33 +22,6 @@ def natural_keys(text):
     return [ atoi(c) for c in re.split(r'(\d+)', text) ]
 
 
-# By Gemini (Google Search AI)
-def int_to_bitstring(integer, length):
-    return (bin(integer)[2:].zfill(length))[::-1]
-
-
-def compute_energy(bitstring, G):
-    theta_bits = [b == "1" for b in list(bitstring)]
-    energy = 0
-    for u, v, data in G.edges(data=True):
-        value = data.get("weight", 1.0)
-        spin_u = 1 if theta_bits[u] else -1
-        spin_v = 1 if theta_bits[v] else -1
-        energy += value * spin_u * spin_v
-
-    return energy
-
-
-# NP-complete spin glass
-def generate_spin_glass_graph(n_nodes=16, degree=3, seed=None):
-    if not (seed is None):
-        np.random.seed(seed)
-    G = nx.random_regular_graph(d=degree, n=n_nodes, seed=seed)
-    for u, v in G.edges():
-        G[u][v]["weight"] = np.random.choice([-1, 1])  # spin glass couplings
-    return G
-
-
 if __name__ == "__main__":
     # Get the file path
     all_file =sorted(glob.glob("G*/G*.txt"), key=natural_keys)
