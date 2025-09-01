@@ -40,4 +40,4 @@ if __name__ == "__main__":
                     graph[idx_i, idx_j] = weight
                 line_ct += 1
 
-        print(f"{i}: {spin_glass_solver(graph)}")
+        print(f"G{i + 1}: {spin_glass_solver(graph)}")
