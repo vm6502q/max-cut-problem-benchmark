@@ -7,11 +7,12 @@
 
 import networkx as nx
 import numpy as np
-from PyQrackIsing import maxcut_tfim, spin_glass_solver
+from pyqrackising import maxcut_tfim, spin_glass_solver, tsp_maxcut
 
 import glob
 import re
 import os
+import sys
 
 
 def atoi(text):
@@ -22,7 +23,24 @@ def natural_keys(text):
     return [ atoi(c) for c in re.split(r'(\d+)', text) ]
 
 
+def neg_cut(G_m, bitstring):
+    sample = [b == '1' for b in list(bitstring)]
+    n_nodes = len(G_m)
+    cut = 0.0
+    for u in range(n_nodes):
+        for v in range(u + 1, n_nodes):
+            val = G_m[u, v]
+            if sample[u] != sample[v]:
+                cut += val
+            elif val < 0:
+                cut -= val
+
+    return cut
+
+
 if __name__ == "__main__":
+    quality = int(sys.argv[1]) if len(sys.argv) > 1 else None
+
     # Get the file path
     all_file =sorted(glob.glob("G*/G*.txt"), key=natural_keys)
 
@@ -40,4 +58,7 @@ if __name__ == "__main__":
                     graph[idx_i, idx_j] = weight
                 line_ct += 1
 
-        print(f"G{i + 1}: {spin_glass_solver(graph)}")
+        bitstring, _, _ = maxcut_tfim(graph, quality=quality)
+        cut_value = neg_cut(graph, bitstring)
+
+        print(f"G{i + 1}: {cut_value}, {bitstring}")
