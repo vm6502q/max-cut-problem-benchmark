@@ -7,7 +7,8 @@
 
 import networkx as nx
 import numpy as np
-from pyqrackising import maxcut_tfim, spin_glass_solver, tsp_maxcut
+from scipy.sparse import lil_matrix
+from pyqrackising import maxcut_tfim_sparse
 
 import glob
 import re
@@ -23,23 +24,9 @@ def natural_keys(text):
     return [ atoi(c) for c in re.split(r'(\d+)', text) ]
 
 
-def neg_cut(G_m, bitstring):
-    sample = [b == '1' for b in list(bitstring)]
-    n_nodes = len(G_m)
-    cut = 0.0
-    for u in range(n_nodes):
-        for v in range(u + 1, n_nodes):
-            val = G_m[u, v]
-            if sample[u] != sample[v]:
-                cut += val
-            elif val < 0:
-                cut -= val
-
-    return cut
-
-
 if __name__ == "__main__":
     quality = int(sys.argv[1]) if len(sys.argv) > 1 else None
+    repulsion_base = float(sys.argv[2]) if len(sys.argv) > 2 else None
 
     # Get the file path
     all_file =sorted(glob.glob("G*/G*.txt"), key=natural_keys)
@@ -50,15 +37,24 @@ if __name__ == "__main__":
         with open(all_file[i]) as f:
             for line in f:
                 if line_ct == 0: # Get graph size
-                    graph = np.zeros((int(line.split()[0]), int(line.split()[0])), dtype=int)
+                    graph = lil_matrix((int(line.split()[0]), int(line.split()[0])), dtype=np.float32)
                 else:
                     idx_i = int(line.split()[0]) - 1
                     idx_j = int(line.split()[1]) - 1
+                    if idx_i > idx_j:
+                        continue
                     weight = int(line.split()[2])
                     graph[idx_i, idx_j] = weight
                 line_ct += 1
 
-        bitstring, _, _ = maxcut_tfim(graph, quality=quality)
-        cut_value = neg_cut(graph, bitstring)
+        graph = graph.tocsr()
+
+        g_max = abs(graph.max())
+        g_min = abs(graph.min())
+        nrm = g_max if g_max > g_min else g_min
+        graph /= nrm
+
+        bitstring, cut_value, _ = maxcut_tfim_sparse(graph, quality=quality, repulsion_base=repulsion_base)
+        cut_value *= nrm
 
         print(f"G{i + 1}: {cut_value}, {bitstring}")
