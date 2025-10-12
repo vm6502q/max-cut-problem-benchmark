@@ -74,7 +74,7 @@ if __name__ == "__main__":
                         continue
                     _graph[idx_i, idx_j] = weight - min_weight
             _graph = _graph.tocsr()
-            bitstring, cut_value, _ = maxcut_tfim_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
+            bitstring, cut_value, _, _ = spin_glass_solver_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False, max_order=2)
         else:
             _graph = graph
             bitstring, cut_value, _, _ = spin_glass_solver_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False, reheat_tries=3, max_order=2)
