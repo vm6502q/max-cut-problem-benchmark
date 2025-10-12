@@ -56,7 +56,7 @@ if __name__ == "__main__":
         nrm = g_max if g_max > g_min else g_min
         graph /= nrm
 
-        bitstring, cut_value, _, _ = spin_glass_solver_sparse(graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False, reheat_tries=2, max_order=2)
+        bitstring, cut_value, _, _ = spin_glass_solver_sparse(graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False, reheat_tries=3, max_order=2)
         cut_value *= nrm
 
         print(f"G{i + 1}: {cut_value}, {bitstring}")
