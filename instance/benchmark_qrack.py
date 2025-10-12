@@ -8,7 +8,7 @@
 import networkx as nx
 import numpy as np
 from scipy.sparse import lil_matrix
-from pyqrackising import spin_glass_solver_sparse
+from pyqrackising import maxcut_tfim_sparse, spin_glass_solver_sparse
 
 import glob
 import re
@@ -24,6 +24,16 @@ def natural_keys(text):
     return [ atoi(c) for c in re.split(r'(\d+)', text) ]
 
 
+def compute_cut(bitstring, G_m, n_qubits):
+    sample = [b == '1' for b in list(bitstring)]
+    cut = 0
+    for u in range(n_qubits):
+        for v in range(u + 1, n_qubits):
+            if sample[u] != sample[v]:
+                cut += G_m[u, v]
+
+    return cut
+
 if __name__ == "__main__":
     quality = int(sys.argv[1]) if len(sys.argv) > 1 else None
     repulsion_base = float(sys.argv[2]) if len(sys.argv) > 2 else None
@@ -35,6 +45,8 @@ if __name__ == "__main__":
     for i in range(len(all_file)):
         line_ct = 0
         n_nodes = 0
+        min_weight = float("inf")
+        max_weight = -float("inf")
         with open(all_file[i]) as f:
             for line in f:
                 if line_ct == 0: # Get graph size
@@ -47,16 +59,27 @@ if __name__ == "__main__":
                         continue
                     weight = int(line.split()[2])
                     graph[idx_i, idx_j] = weight
+                    if weight < min_weight:
+                        min_weight = weight
                 line_ct += 1
 
         graph = graph.tocsr()
 
-        g_max = abs(graph.max())
-        g_min = abs(graph.min())
-        nrm = g_max if g_max > g_min else g_min
-        graph /= nrm
+        if min_weight < 0:
+            _graph = lil_matrix((n_nodes, n_nodes), dtype=np.float32)
+            for idx_i in range(n_nodes):
+                for idx_j in range(idx_i + 1, n_nodes):
+                    weight = graph[idx_i, idx_j]
+                    if weight == min_weight:
+                        continue
+                    _graph[idx_i, idx_j] = weight - min_weight
+            _graph = _graph.tocsr()
+            bitstring, cut_value, _ = maxcut_tfim_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
+        else:
+            _graph = graph
+            bitstring, cut_value, _, _ = spin_glass_solver_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False, reheat_tries=3, max_order=2)
 
-        bitstring, cut_value, _, _ = spin_glass_solver_sparse(graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False, reheat_tries=3, max_order=2)
-        cut_value *= nrm
+        if min_weight < 0:
+            cut_value = compute_cut(bitstring, graph, n_nodes)
 
         print(f"G{i + 1}: {cut_value}, {bitstring}")
