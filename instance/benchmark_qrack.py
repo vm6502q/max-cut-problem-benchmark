@@ -65,21 +65,7 @@ if __name__ == "__main__":
 
         graph = graph.tocsr()
 
-        if min_weight < 0:
-            _graph = lil_matrix((n_nodes, n_nodes), dtype=np.float32)
-            for idx_i in range(n_nodes):
-                for idx_j in range(idx_i + 1, n_nodes):
-                    weight = graph[idx_i, idx_j]
-                    if weight == min_weight:
-                        continue
-                    _graph[idx_i, idx_j] = weight - min_weight
-            _graph = _graph.tocsr()
-            bitstring, cut_value, _, _ = spin_glass_solver_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False, max_order=2)
-        else:
-            _graph = graph
-            bitstring, cut_value, _, _ = spin_glass_solver_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False, reheat_tries=3, max_order=2)
-
-        if min_weight < 0:
-            cut_value = compute_cut(bitstring, graph, n_nodes)
+        _graph = graph
+        bitstring, cut_value, _ = maxcut_tfim_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False) #, reheat_tries=2)
 
         print(f"G{i + 1}: {cut_value}, {bitstring}")
