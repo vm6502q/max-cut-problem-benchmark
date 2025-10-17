@@ -66,6 +66,6 @@ if __name__ == "__main__":
         graph = graph.tocsr()
 
         _graph = graph
-        bitstring, cut_value, _ = maxcut_tfim_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False) #, reheat_tries=2)
+        bitstring, cut_value, _, _ = spin_glass_solver_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False, max_order=2, reheat_tries=1)
 
         print(f"G{i + 1}: {cut_value}, {bitstring}")
