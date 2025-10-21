@@ -35,8 +35,8 @@ def compute_cut(bitstring, G_m, n_qubits):
     return cut
 
 if __name__ == "__main__":
-    quality = int(sys.argv[1]) if len(sys.argv) > 1 else 6
-    repulsion_base = float(sys.argv[2]) if len(sys.argv) > 2 else 5.0
+    quality = int(sys.argv[1]) if len(sys.argv) > 1 else None
+    repulsion_base = float(sys.argv[2]) if len(sys.argv) > 2 else None
 
     # Get the file path
     all_file =sorted(glob.glob("G*/G*.txt"), key=natural_keys)
