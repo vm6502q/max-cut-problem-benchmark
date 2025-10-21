@@ -35,8 +35,8 @@ def compute_cut(bitstring, G_m, n_qubits):
     return cut
 
 if __name__ == "__main__":
-    quality = int(sys.argv[1]) if len(sys.argv) > 1 else None
-    repulsion_base = float(sys.argv[2]) if len(sys.argv) > 2 else None
+    quality = int(sys.argv[1]) if len(sys.argv) > 1 else 6
+    repulsion_base = float(sys.argv[2]) if len(sys.argv) > 2 else 5.0
 
     # Get the file path
     all_file =sorted(glob.glob("G*/G*.txt"), key=natural_keys)
@@ -65,7 +65,6 @@ if __name__ == "__main__":
 
         graph = graph.tocsr()
 
-        _graph = graph
-        bitstring, cut_value, _ = maxcut_tfim_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
+        bitstring, cut_value, _, _ = spin_glass_solver_sparse(graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
 
         print(f"G{i + 1}: {cut_value}, {bitstring}")
