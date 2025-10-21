@@ -8,7 +8,7 @@
 import networkx as nx
 import numpy as np
 from scipy.sparse import lil_matrix
-from pyqrackising import maxcut_tfim, spin_glass_solver
+from pyqrackising import maxcut_tfim_sparse, spin_glass_solver_sparse
 
 import glob
 import re
@@ -51,7 +51,7 @@ if __name__ == "__main__":
             for line in f:
                 if line_ct == 0: # Get graph size
                     n_nodes = int(line.split()[0])
-                    graph = np.zeros((n_nodes, int(line.split()[0])), dtype=np.float32)
+                    graph = lil_matrix((n_nodes, int(line.split()[0])), dtype=np.float32)
                 else:
                     idx_i = int(line.split()[0]) - 1
                     idx_j = int(line.split()[1]) - 1
@@ -63,6 +63,9 @@ if __name__ == "__main__":
                         min_weight = weight
                 line_ct += 1
 
-        bitstring, cut_value, _ = maxcut_tfim(graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
+        graph = graph.tocsr()
+
+        _graph = graph
+        bitstring, cut_value, _ = maxcut_tfim_sparse(_graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
 
         print(f"G{i + 1}: {cut_value}, {bitstring}")
