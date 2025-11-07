@@ -68,7 +68,7 @@ def gw_sdp_maxcut(W):
 
     cut_value = compute_cut(x, W)
 
-    sample = "".join(["1" if b else "0" for b in x])
+    sample = "".join(["1" if b < 0 else "0" for b in x])
 
     return sample, cut_value
 
