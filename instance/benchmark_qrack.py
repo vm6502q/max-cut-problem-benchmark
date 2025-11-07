@@ -5,7 +5,6 @@
 
 # After tackling the case where parameters are uniform and independent of time, we generalize the model by averaging per-qubit behavior as if the static case and per-time-step behavior as finite difference. This provides the basis of a novel physics-inspired (adiabatic TFIM) MAXCUT approximate solver that often gives optimal or exact answers on a wide selection of graph types.
 
-import networkx as nx
 import numpy as np
 from scipy.sparse import lil_matrix
 from pyqrackising import maxcut_tfim_sparse, spin_glass_solver_sparse
@@ -24,16 +23,6 @@ def natural_keys(text):
     return [ atoi(c) for c in re.split(r'(\d+)', text) ]
 
 
-def compute_cut(bitstring, G_m, n_qubits):
-    sample = [b == '1' for b in list(bitstring)]
-    cut = 0
-    for u in range(n_qubits):
-        for v in range(u + 1, n_qubits):
-            if sample[u] != sample[v]:
-                cut += G_m[u, v]
-
-    return cut
-
 if __name__ == "__main__":
     quality = int(sys.argv[1]) if len(sys.argv) > 1 else None
     repulsion_base = float(sys.argv[2]) if len(sys.argv) > 2 else None
@@ -45,8 +34,6 @@ if __name__ == "__main__":
     for i in range(len(all_file)):
         line_ct = 0
         n_nodes = 0
-        min_weight = float("inf")
-        max_weight = -float("inf")
         with open(all_file[i]) as f:
             for line in f:
                 if line_ct == 0: # Get graph size
@@ -59,8 +46,6 @@ if __name__ == "__main__":
                         continue
                     weight = int(line.split()[2])
                     graph[idx_i, idx_j] = weight
-                    if weight < min_weight:
-                        min_weight = weight
                 line_ct += 1
 
         graph = graph.tocsr()
