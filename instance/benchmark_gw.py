@@ -66,10 +66,7 @@ def gw_sdp_maxcut(W):
     r = np.random.randn(U.shape[1])
     x = np.sign(U @ r)
 
-    cut_value = compute_cut(x, G_m)
-    for i, j in G.edges():
-        if x[i] != x[j]:
-            cut_value += G[i][j].get("weight", 1.0)
+    cut_value = compute_cut(x, W)
 
     sample = "".join(["1" if b else "0" for b in x])
 
