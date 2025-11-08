@@ -28,7 +28,16 @@ if __name__ == "__main__":
     repulsion_base = float(sys.argv[2]) if len(sys.argv) > 2 else None
 
     # Get the file path
-    all_file =sorted(glob.glob("G*/G*.txt"), key=natural_keys)
+    all_file = glob.glob("G[6789]/G*.txt")
+    all_file += glob.glob("G1[012389]/G*.txt")
+    all_file += glob.glob("G2[01789]/G*.txt")
+    all_file += glob.glob("G3[012349]/G*.txt")
+    all_file += glob.glob("G4[01289]/G*.txt")
+    all_file += glob.glob("G5[0679]/G*.txt")
+    all_file += glob.glob("G6[124567]/G*.txt")
+    all_file += glob.glob("G7[27]/G*.txt")
+    all_file += glob.glob("G8[1]/G*.txt")
+    all_file = sorted(all_file, key=natural_keys)
 
     # Generate graph from file
     for i in range(len(all_file)):
