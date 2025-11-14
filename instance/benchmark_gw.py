@@ -95,6 +95,8 @@ if __name__ == "__main__":
                     graph[idx_i, idx_j] = int(line.split()[2])
                 line_ct += 1
 
+        start = time.perf_counter()
         bitstring, cut_value = gw_sdp_maxcut(graph)
+        end = time.perf_counter()
 
-        print(f"G{i + 1}: {cut_value}, {bitstring}")
+        print(f"{all_file[i].split('/')[0]}: {end - start} seconds, {cut_value}, {bitstring}")

@@ -59,6 +59,8 @@ if __name__ == "__main__":
 
         graph = graph.tocsr()
 
+        start = time.perf_counter()
         bitstring, cut_value, _, _ = spin_glass_solver_sparse(graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
+        end = time.perf_counter()
 
-        print(f"{all_file[i].split('/')[0]}: {cut_value}, {bitstring}")
+        print(f"{all_file[i].split('/')[0]}: {end - start} seconds, {cut_value}, {bitstring}")
