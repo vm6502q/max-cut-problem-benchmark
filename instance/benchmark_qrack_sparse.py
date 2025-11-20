@@ -39,7 +39,7 @@ if __name__ == "__main__":
             for line in f:
                 if line_ct == 0: # Get graph size
                     n_nodes = int(line.split()[0])
-                    graph = lil_matrix((n_nodes, int(line.split()[0])), dtype=np.float32)
+                    graph = lil_matrix((n_nodes, n_nodes), dtype=np.float32)
                 else:
                     idx_i = int(line.split()[0]) - 1
                     idx_j = int(line.split()[1]) - 1

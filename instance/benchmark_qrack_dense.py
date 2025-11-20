@@ -6,13 +6,13 @@
 # After tackling the case where parameters are uniform and independent of time, we generalize the model by averaging per-qubit behavior as if the static case and per-time-step behavior as finite difference. This provides the basis of a novel physics-inspired (adiabatic TFIM) MAXCUT approximate solver that often gives optimal or exact answers on a wide selection of graph types.
 
 import numpy as np
-from scipy.sparse import lil_matrix
-from pyqrackising import maxcut_tfim_sparse, spin_glass_solver_sparse
+from pyqrackising import maxcut_tfim, spin_glass_solver
 
 import glob
 import re
 import os
 import sys
+import time
 
 
 def atoi(text):
@@ -28,16 +28,7 @@ if __name__ == "__main__":
     repulsion_base = float(sys.argv[2]) if len(sys.argv) > 2 else None
 
     # Get the file path
-    all_file = glob.glob("G[6789]/G*.txt")
-    all_file += glob.glob("G1[012389]/G*.txt")
-    all_file += glob.glob("G2[01789]/G*.txt")
-    all_file += glob.glob("G3[012349]/G*.txt")
-    all_file += glob.glob("G4[01289]/G*.txt")
-    all_file += glob.glob("G5[0679]/G*.txt")
-    all_file += glob.glob("G6[124567]/G*.txt")
-    all_file += glob.glob("G7[27]/G*.txt")
-    all_file += glob.glob("G8[1]/G*.txt")
-    all_file = sorted(all_file, key=natural_keys)
+    all_file =sorted(glob.glob("G*/G*.txt"), key=natural_keys)
 
     # Generate graph from file
     for i in range(len(all_file)):
@@ -47,20 +38,15 @@ if __name__ == "__main__":
             for line in f:
                 if line_ct == 0: # Get graph size
                     n_nodes = int(line.split()[0])
-                    graph = lil_matrix((n_nodes, n_nodes), dtype=np.float32)
+                    graph = np.zeros((n_nodes, n_nodes), dtype=np.float32)
                 else:
                     idx_i = int(line.split()[0]) - 1
                     idx_j = int(line.split()[1]) - 1
-                    if idx_i > idx_j:
-                        continue
-                    weight = int(line.split()[2])
-                    graph[idx_i, idx_j] = weight
+                    graph[idx_i, idx_j] = int(line.split()[2])
                 line_ct += 1
 
-        graph = graph.tocsr()
-
         start = time.perf_counter()
-        bitstring, cut_value, _, _ = spin_glass_solver_sparse(graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
+        bitstring, cut_value, _, _ = spin_glass_solver(graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
         end = time.perf_counter()
 
         print(f"{all_file[i].split('/')[0]}: {end - start} seconds, {cut_value}, {bitstring}")
