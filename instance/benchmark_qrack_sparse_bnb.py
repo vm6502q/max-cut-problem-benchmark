@@ -6,7 +6,7 @@
 # After tackling the case where parameters are uniform and independent of time, we generalize the model by averaging per-qubit behavior as if the static case and per-time-step behavior as finite difference. This provides the basis of a novel physics-inspired (adiabatic TFIM) MAXCUT approximate solver that often gives optimal or exact answers on a wide selection of graph types.
 
 import networkx as nx
-from pyqrackising import solve_maxcut_exact_sparse
+from pyqrackising import solve_maxcut_bnb_sparse
 
 import glob
 import re
@@ -47,7 +47,7 @@ if __name__ == "__main__":
                 line_ct += 1
 
         start = time.perf_counter()
-        bitstring, cut_value, _, _ = solve_maxcut_exact_sparse(graph, time_limit=time_limit)
+        bitstring, cut_value, _, _ = solve_maxcut_bnb_sparse(graph, time_limit=time_limit)
         end = time.perf_counter()
 
         print(f"{all_file[i].split('/')[0]}: {end - start} seconds, {cut_value}, {bitstring}")
