@@ -26,7 +26,7 @@ def natural_keys(text):
 if __name__ == "__main__":
     quality = int(sys.argv[1]) if len(sys.argv) > 1 else None
     repulsion_base = float(sys.argv[2]) if len(sys.argv) > 2 else None
-    time_limit = int(sys.argv[3]) if len(sys.argv) > 3 else 180 
+    time_limit = int(sys.argv[3]) if len(sys.argv) > 3 else 360
 
     # Get the file path
     all_file =sorted(glob.glob("G*/G*.txt"), key=natural_keys)
@@ -47,7 +47,7 @@ if __name__ == "__main__":
                 line_ct += 1
 
         start = time.perf_counter()
-        bitstring, cut_value, _, _ = solve_maxcut_bnb(graph, time_limit=time_limit)
+        bitstring, cut_value, _, _, _ = solve_maxcut_bnb(graph, time_limit=time_limit)
         end = time.perf_counter()
 
         print(f"{all_file[i].split('/')[0]}: {end - start} seconds, {cut_value}, {bitstring}")
