@@ -25,8 +25,9 @@ def natural_keys(text):
 
 
 if __name__ == "__main__":
-    quality = int(sys.argv[1]) if len(sys.argv) > 1 else None
-    repulsion_base = float(sys.argv[2]) if len(sys.argv) > 2 else None
+    trials = int(sys.argv[1]) if len(sys.argv) > 1 else 8
+    quality = int(sys.argv[2]) if len(sys.argv) > 2 else None
+    repulsion_base = float(sys.argv[3]) if len(sys.argv) > 3 else None
 
     # Get the file path
     all_file =sorted(glob.glob("G*/G*.txt"), key=natural_keys)
@@ -54,7 +55,7 @@ if __name__ == "__main__":
 
         graph = graph.tocsr()
         start = time.perf_counter()
-        for _ in range(3):
+        for _ in range(trials):
             bitstring, cut_value, _, _ = spin_glass_solver_sparse(graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
             end = time.perf_counter()
             if cut_value > best_cut:
