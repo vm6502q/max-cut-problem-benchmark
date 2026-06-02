@@ -36,31 +36,30 @@ if __name__ == "__main__":
         best_cut = float("-inf")
         best_bitstring = ""
         tot_time = 0.0
+        line_ct = 0
+        n_nodes = 0
+        with open(all_file[i]) as f:
+            for line in f:
+                if line_ct == 0: # Get graph size
+                    n_nodes = int(line.split()[0])
+                    graph = lil_matrix((n_nodes, n_nodes), dtype=np.float32)
+                else:
+                    idx_i = int(line.split()[0]) - 1
+                    idx_j = int(line.split()[1]) - 1
+                    if idx_i > idx_j:
+                        continue
+                    weight = int(line.split()[2])
+                    graph[idx_i, idx_j] = weight
+                line_ct += 1
+
+        graph = graph.tocsr()
+        start = time.perf_counter()
         for _ in range(3):
-            line_ct = 0
-            n_nodes = 0
-            with open(all_file[i]) as f:
-                for line in f:
-                    if line_ct == 0: # Get graph size
-                        n_nodes = int(line.split()[0])
-                        graph = lil_matrix((n_nodes, n_nodes), dtype=np.float32)
-                    else:
-                        idx_i = int(line.split()[0]) - 1
-                        idx_j = int(line.split()[1]) - 1
-                        if idx_i > idx_j:
-                            continue
-                        weight = int(line.split()[2])
-                        graph[idx_i, idx_j] = weight
-                    line_ct += 1
-
-            graph = graph.tocsr()
-
-            start = time.perf_counter()
             bitstring, cut_value, _, _ = spin_glass_solver_sparse(graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
             end = time.perf_counter()
-            tot_time += end - start
             if cut_value > best_cut:
                 best_cut = cut_value
                 best_bitstring = bitstring
+        tot_time += end - start
 
         print(f"{all_file[i].split('/')[0]}: {tot_time} seconds (for best-of-3), {best_cut}, {best_bitstring}")
