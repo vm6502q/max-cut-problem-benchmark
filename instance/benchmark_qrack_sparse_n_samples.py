@@ -63,4 +63,4 @@ if __name__ == "__main__":
                 best_bitstring = bitstring
         tot_time += end - start
 
-        print(f"{all_file[i].split('/')[0]}: {tot_time} seconds (for best-of-3), {best_cut}, {best_bitstring}")
+        print(f"{all_file[i].split('/')[0]}: {tot_time} seconds (for best-of-{trials}), {best_cut}, {best_bitstring}")
