@@ -5,6 +5,7 @@
 
 # After tackling the case where parameters are uniform and independent of time, we generalize the model by averaging per-qubit behavior as if the static case and per-time-step behavior as finite difference. This provides the basis of a novel physics-inspired (adiabatic TFIM) MAXCUT approximate solver that often gives optimal or exact answers on a wide selection of graph types.
 
+import networkx as nx
 import numpy as np
 from scipy.sparse import lil_matrix
 from pyqrackising import spin_glass_solver_hybrid
