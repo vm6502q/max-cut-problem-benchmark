@@ -7,7 +7,7 @@
 
 import numpy as np
 from scipy.sparse import lil_matrix
-from pyqrackising import maxcut_tfim_sparse, spin_glass_solver_sparse
+from pyqrackising import spin_glass_solver_hybrid
 
 import glob
 import re
@@ -39,24 +39,23 @@ if __name__ == "__main__":
         tot_time = 0.0
         line_ct = 0
         n_nodes = 0
+        G = nx.Graph()
         with open(all_file[i]) as f:
             for line in f:
                 if line_ct == 0: # Get graph size
                     n_nodes = int(line.split()[0])
                     graph = lil_matrix((n_nodes, n_nodes), dtype=np.float32)
                 else:
-                    idx_i = int(line.split()[0]) - 1
-                    idx_j = int(line.split()[1]) - 1
-                    if idx_i > idx_j:
-                        continue
-                    weight = int(line.split()[2])
-                    graph[idx_i, idx_j] = weight
+                    l_s = line.split()
+                    idx_i = int(l_s[0]) - 1
+                    idx_j = int(l_s[1]) - 1
+                    G.add_edge(idx_i, idx_j, weight=int(l_s[2]))
                 line_ct += 1
 
         graph = graph.tocsr()
         start = time.perf_counter()
         for _ in range(trials):
-            bitstring, cut_value, _, _ = spin_glass_solver_sparse(graph, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
+            bitstring, cut_value, _, _ = spin_glass_solver_hybrid(G, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
             end = time.perf_counter()
             if cut_value > best_cut:
                 best_cut = cut_value

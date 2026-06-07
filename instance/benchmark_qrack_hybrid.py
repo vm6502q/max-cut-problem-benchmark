@@ -7,7 +7,7 @@
 
 import networkx as nx
 import numpy as np
-from pyqrackising import maxcut_tfim, spin_glass_solver_sparse
+from pyqrackising import spin_glass_solver_hybrid
 
 import glob
 import re
@@ -41,14 +41,14 @@ if __name__ == "__main__":
                 if line_ct == 0: # Get graph size
                     n_nodes = int(line.split()[0])
                 else:
-                    idx_i = int(line.split()[0]) - 1
-                    idx_j = int(line.split()[1]) - 1
-                    G.add_edge(idx_i, idx_j, weight=int(line.split()[2]))
+                    l_s = line.split()
+                    idx_i = int(l_s[0]) - 1
+                    idx_j = int(l_s[1]) - 1
+                    G.add_edge(idx_i, idx_j, weight=int(l_s[2]))
                 line_ct += 1
 
         start = time.perf_counter()
-        guess, _, _ = maxcut_tfim(G, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
-        bitstring, cut_value, _, _ = spin_glass_solver_sparse(G, best_guess=guess, is_spin_glass=False)
+        bitstring, cut_value, _, _ = spin_glass_solver_hybrid(G, quality=quality, repulsion_base=repulsion_base, is_spin_glass=False)
         end = time.perf_counter()
 
         print(f"{all_file[i].split('/')[0]}: {end - start} seconds, {cut_value}, {bitstring}")
